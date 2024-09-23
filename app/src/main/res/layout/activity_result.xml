@@ -6,12 +6,11 @@
     >
 
     <Button
-        android:id="@+id/btnLogout"
+        android:id="@+id/btnRefesh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="9dp"
         android:text="New game"
-
         tools:ignore="HardcodedText,MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
