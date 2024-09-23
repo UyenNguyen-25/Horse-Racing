@@ -17,9 +17,16 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".RacingActivity"
+            android:label="racing_screen">
+        </activity>
+        <activity
+            android:name=".ResultActivity"
+            android:label="result_screen">
         </activity>
     </application>
 
