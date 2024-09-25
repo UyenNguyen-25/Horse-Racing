@@ -13,4 +13,7 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+=======
+# Gradle files
+.gradle/
+build/
