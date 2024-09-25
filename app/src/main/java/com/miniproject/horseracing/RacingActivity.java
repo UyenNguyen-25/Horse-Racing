@@ -21,6 +21,7 @@ public class RacingActivity extends AppCompatActivity {
     private BigDecimal balance = BigDecimal.valueOf(100);
 
     SeekBar horse1, horse2, horse3;
+    private boolean isRacing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class RacingActivity extends AppCompatActivity {
     final int MAX_SPEED_CHANGE = 2;
     final int CYCLE_LENGTH = 200; // millisecond(s)
     final int SPEED_CHANGE_BREAKPOINT_1 = 400 / CYCLE_LENGTH; // cycle(s)
-    final int SPEED_CHANGE_BREAKPOINT_2 = 800 / CYCLE_LENGTH; // cycle(s)
+    final int SPEED_CHANGE_BREAKPOINT_2 = 8000 / CYCLE_LENGTH; // cycle(s)
     final int[] SPEED_BIAS = new int[]{0, 1, 2};
 
     private final int[] progress = new int[3];
@@ -69,6 +70,7 @@ public class RacingActivity extends AppCompatActivity {
             int lastChange;
             float chance;
             int bias;
+            int speedChange;
             for (int i = 0; i < 3; i++) {
                 // Increment lastChanged
                 lastChange = ++lastSpeedChange[i];
@@ -86,17 +88,18 @@ public class RacingActivity extends AppCompatActivity {
                     // Rubberband mechanics: If behind, more likely to speed up
                     bias = SPEED_BIAS[standings[i] - 1];
                     // Actually change speed here
-                    speed[i] += (random.nextInt(2 * MAX_SPEED_CHANGE + 1) - MAX_SPEED_CHANGE + bias);
-                    Log.d(TAG, "Horse " + i + " : Speed=" + speed[i] + " Bias=" + bias);
-
-
+                    speedChange = (random.nextInt(2 * MAX_SPEED_CHANGE + 1) - MAX_SPEED_CHANGE + bias);
+                    speed[i] += speedChange;
                     if (speed[i] < MIN_SPEED) speed[i] = MIN_SPEED;
                     if (speed[i] > MAX_SPEED) speed[i] = MAX_SPEED;
+                    Log.d(TAG, "Horse " + (i + 1) + " has changed speed!"
+                            + " : Change=" + speedChange + " Bias=" + bias);
                 }
 
                 // Increase progress by speed
                 progress[i] += speed[i];
-                Log.d(TAG, "Horse " + i + " : Progress=" + progress[i]);
+                Log.d(TAG, "Horse " + (i + 1) + " : Standing=" + standings[i]
+                        + " Progress=" + progress[i] + " Speed=" + speed[i]);
             }
 
             horse1.setProgress(progress[0], true);
@@ -138,20 +141,22 @@ public class RacingActivity extends AppCompatActivity {
     };
 
     private void startRace(View view) {
-        if (timer != null) {
+        if (timer != null || isRacing) {
             return;
         }
 
+        isRacing = true;
         Log.d(TAG, "Race started.");
         for (int i = 0; i < 3; i++) {
             speed[i] = INIT_SPEED;
-            Log.d(TAG, "Speed " + (i + 1) + ": " + speed[i]);
+            Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
         }
         timer = new Timer();
         timer.schedule(timerTask, 0, 100);
     }
 
     private void stopRace() {
+        isRacing = false;
         if (timer != null) {
             timer.cancel();
             timer = null;
