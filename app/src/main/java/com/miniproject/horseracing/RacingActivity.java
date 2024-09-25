@@ -48,11 +48,11 @@ public class RacingActivity extends AppCompatActivity {
 
     final int INIT_SPEED = 2;
     final int MIN_SPEED = 1;
-    final int MAX_SPEED = 4;
+    final int MAX_SPEED = 5;
     final int MAX_SPEED_CHANGE = 2;
-    final int CYCLE_LENGTH = 200; // millisecond(s)
+    final int CYCLE_LENGTH = 250; // millisecond(s)
     final int SPEED_CHANGE_BREAKPOINT_1 = 400 / CYCLE_LENGTH; // cycle(s)
-    final int SPEED_CHANGE_BREAKPOINT_2 = 8000 / CYCLE_LENGTH; // cycle(s)
+    final int SPEED_CHANGE_BREAKPOINT_2 = 4000 / CYCLE_LENGTH; // cycle(s)
     final int[] SPEED_BIAS = new int[]{0, 1, 2};
 
     private final int[] progress = new int[3];
@@ -85,6 +85,7 @@ public class RacingActivity extends AppCompatActivity {
                     chance = 1;
                 }
                 if (random.nextFloat() < chance) {
+                    lastSpeedChange[i] = 0;
                     // Rubberband mechanics: If behind, more likely to speed up
                     bias = SPEED_BIAS[standings[i] - 1];
                     // Actually change speed here
