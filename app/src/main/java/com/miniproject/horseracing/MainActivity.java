@@ -11,6 +11,8 @@ import android.widget.EditText;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import model.Account;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     EditText  usernameTxt, passwordTxt;
     Button signInBtn;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         passwordTxt =findViewById(R.id.PasswordEditText);
         signInBtn = findViewById(R.id.LoginButton);
         signInBtn.setOnClickListener(this);
+//        Account acc = new Account("sa", "1");
     }
 
     boolean checkInput() {
