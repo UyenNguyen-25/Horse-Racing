@@ -11,8 +11,7 @@
         android:id="@+id/layoutRacing"
         android:layout_width="416dp"
         android:layout_height="373dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/_002_i505_013_game_landscapes_set_15"
+        android:background="@drawable/bg_sea"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -30,8 +29,10 @@
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="68dp"
             android:layout_marginTop="100dp"
+            android:progressDrawable="@drawable/transparent_drawable"
+            android:thumb="@mipmap/purple_horse_foreground"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,6 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:progressDrawable="@drawable/transparent_drawable"
+            android:thumb="@mipmap/orange_horse_foreground"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,46 +51,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            />
+            android:progressDrawable="@drawable/transparent_drawable"
+            android:thumb="@mipmap/red_horse_foreground" />
+
+        <EditText
+            android:id="@+id/betHorse3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="44dp"
+            android:autofillHints=""
+            android:hint="0.0$"
+            android:inputType="number"
+            android:visibility="invisible"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/horse2m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="0 cm/min"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.254"
-        app:layout_constraintStart_toEndOf="@+id/checkBox2"
-        app:layout_constraintTop_toBottomOf="@+id/horse1m"
-        app:layout_constraintVertical_bias="0.23"
-        tools:ignore="HardcodedText" />
-
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/orangeCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="72dp"
         android:text="Orange Horse"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintHorizontal_bias="0.128"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="HardcodedText,MissingConstraints" />
 
     <CheckBox
-        android:id="@+id/checkBox3"
+        android:id="@+id/pinkCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="White horse"
-        app:layout_constraintStart_toStartOf="@+id/checkBox2"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox2"
+        android:text="Pink Horse"
+        app:layout_constraintStart_toStartOf="@+id/blueCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/blueCheckBox"
         tools:ignore="HardcodedText" />
 
     <EditText
@@ -153,59 +153,15 @@
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="HardcodedText,MissingConstraints" />
 
-    <TextView
-        android:id="@+id/horse3m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="44dp"
-        android:text="0 cm/min"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.107"
-        app:layout_constraintStart_toEndOf="@+id/checkBox3"
-        app:layout_constraintTop_toBottomOf="@+id/horse2m"
-        app:layout_constraintVertical_bias="0.1"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/horse1m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="0 cm/min"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.181"
-        app:layout_constraintStart_toEndOf="@+id/checkBox1"
-        app:layout_constraintTop_toBottomOf="@+id/moneyTitle"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="HardcodedText" />
-
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/blueCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="16dp"
         android:text="Blue Horse"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox1"
-        tools:ignore="HardcodedText" />
-
-    <EditText
-        android:id="@+id/betHorse3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:autofillHints=""
-        android:hint="0.0$"
-        android:inputType="number"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="@+id/betHorse2"
-        app:layout_constraintTop_toTopOf="@+id/betHorse2"
+        app:layout_constraintTop_toBottomOf="@+id/orangeCheckBox"
         tools:ignore="HardcodedText" />
 
     <TextView
@@ -241,49 +197,56 @@
         android:layout_marginStart="3dp"
         android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="@+id/btnStart"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
+        app:layout_constraintTop_toBottomOf="@+id/pinkCheckBox" />
 
     <EditText
-        android:id="@+id/editTextNumber"
+        android:id="@+id/orangeEditText"
         android:layout_width="76dp"
         android:layout_height="43dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="92dp"
         android:autofillHints=""
         android:ems="10"
-        android:inputType="number"
         android:hint="0.0$"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox1"
+        android:inputType="number"
+        android:textColorLink="#4D9D9D9D"
+        app:layout_constraintBottom_toBottomOf="@+id/orangeCheckBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/horse1m"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/orangeCheckBox"
+        app:layout_constraintTop_toTopOf="@+id/orangeCheckBox"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="HardcodedText" />
 
     <EditText
-        android:id="@+id/editTextNumber2"
+        android:id="@+id/blueEditText"
         android:layout_width="76dp"
         android:layout_height="43dp"
         android:autofillHints=""
         android:ems="10"
-        android:inputType="number"
         android:hint="0.0$"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox2"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="@+id/blueCheckBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/horse2m"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumber"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.53"
+        app:layout_constraintStart_toEndOf="@+id/blueCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/orangeEditText"
+        app:layout_constraintVertical_bias="0.807"
         tools:ignore="HardcodedText" />
 
     <EditText
+        android:id="@+id/pinkEditText"
         android:layout_width="76dp"
         android:layout_height="43dp"
         android:autofillHints=""
         android:ems="10"
-        android:inputType="number"
         android:hint="0.0$"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox3"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="@+id/pinkCheckBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/horse1m"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumber2"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.513"
+        app:layout_constraintStart_toEndOf="@+id/pinkCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/blueEditText"
+        app:layout_constraintVertical_bias="0.807"
         tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
