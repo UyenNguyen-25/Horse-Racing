@@ -20,7 +20,7 @@ public class RacingActivity extends AppCompatActivity {
     private final double ODDS = 2;
     private BigDecimal balance = BigDecimal.valueOf(100);
 
-    SeekBar horse1, horse2, horse3;
+    SeekBar[] horses = new SeekBar[3];
     private boolean isRacing;
 
     @Override
@@ -33,50 +33,58 @@ public class RacingActivity extends AppCompatActivity {
         Button btnReset = findViewById(R.id.btnReset);
         Button btnLogout = findViewById(R.id.btnLogout);
 
-        horse1 = findViewById(R.id.seekBar1);
-        horse2 = findViewById(R.id.seekBar2);
-        horse3 = findViewById(R.id.seekBar3);
-
-        horse1.setProgress(0, false);
-        horse2.setProgress(0, false);
-        horse3.setProgress(0, false);
+        horses[0] = findViewById(R.id.seekBar1);
+        horses[1] = findViewById(R.id.seekBar2);
+        horses[2] = findViewById(R.id.seekBar3);
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            horses[i].setProgress(0, false);
+        }
 
         btnStart.setOnClickListener(this::startRace);
+        btnReset.setOnClickListener(this::resetRace);
 
         // TODO: Handle betting
     }
 
-    final int INIT_SPEED = 2;
-    final int MIN_SPEED = 1;
+    final int HORSE_COUNT = 3;
+    final int INIT_SPEED_MIN = 1;
+    final int INIT_SPEED_MAX = 3;
+    final int MIN_SPEED = 2;
     final int MAX_SPEED = 5;
     final int MAX_SPEED_CHANGE = 2;
-    final int CYCLE_LENGTH = 250; // millisecond(s)
-    final int SPEED_CHANGE_BREAKPOINT_1 = 400 / CYCLE_LENGTH; // cycle(s)
-    final int SPEED_CHANGE_BREAKPOINT_2 = 4000 / CYCLE_LENGTH; // cycle(s)
-    final int[] SPEED_BIAS = new int[]{0, 1, 2};
+    final int CYCLE_LENGTH = 100; // millisecond(s)
+    final int SPEED_CHANGE_BREAKPOINT_1 = 4; // cycle(s)
+    final int SPEED_CHANGE_BREAKPOINT_2 = 15; // cycle(s)
+
+    final float[] CHANCE_BIAS = new float[]{-0.2f, 0f, 0.2f};
+    final int[] SPEED_BIAS = new int[]{0, 0, 1};
 
     private final int[] progress = new int[3];
-    private final int[] speed = new int[3];
     private final int[] standings = new int[3]; // standings[horse] = place
+    private final int[] speed = new int[3];
     private final byte[] lastSpeedChange = new byte[3];
 
     private final Random random = new Random();
     private Timer timer;
-    private final TimerTask timerTask = new TimerTask() {
+    private TimerTask raceTask;
+
+    class RaceTask extends TimerTask {
 
         @Override
         public void run() {
-            updateStandings();
             int lastChange;
             float chance;
             int bias;
             int speedChange;
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < HORSE_COUNT; i++) {
                 // Increment lastChanged
                 lastChange = ++lastSpeedChange[i];
 
                 // Randomly decides whether to change speed; if true, reset lastChanged
-                // Probability: [0-1s] = 0%; [1-3s] = 0..100%; >3s = 100%
+                // Probability:
+                //      (..1st_breakpoint) = 0%
+                //      [1st_breakpoint,2nd_breakpoint) = 0..100%
+                //      [2nd_breakpoint..) = 100%
                 if (lastChange < SPEED_CHANGE_BREAKPOINT_1) {
                     chance = 0;
                 } else if (lastChange < SPEED_CHANGE_BREAKPOINT_2) {
@@ -84,7 +92,7 @@ public class RacingActivity extends AppCompatActivity {
                 } else {
                     chance = 1;
                 }
-                if (random.nextFloat() < chance) {
+                if (random.nextFloat() < chance + CHANCE_BIAS[standings[i] - 1]) {
                     lastSpeedChange[i] = 0;
                     // Rubberband mechanics: If behind, more likely to speed up
                     bias = SPEED_BIAS[standings[i] - 1];
@@ -99,15 +107,18 @@ public class RacingActivity extends AppCompatActivity {
 
                 // Increase progress by speed
                 progress[i] += speed[i];
+                updateStandings();
                 Log.d(TAG, "Horse " + (i + 1) + " : Standing=" + standings[i]
                         + " Progress=" + progress[i] + " Speed=" + speed[i]);
             }
 
-            horse1.setProgress(progress[0], true);
-            horse2.setProgress(progress[1], true);
-            horse3.setProgress(progress[2], true);
+            // Animate the horses
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                horses[i].setProgress(progress[i], true);
+            }
 
-            for (int i = 0; i < 3; i++) {
+            // Determine if there's a winner
+            for (int i = 0; i < HORSE_COUNT; i++) {
                 if (progress[i] >= 100) {
                     stopRace();
                     // TODO: Show results
@@ -139,21 +150,32 @@ public class RacingActivity extends AppCompatActivity {
         private void setStandings(int... s) {
             System.arraycopy(s, 0, standings, 0, 3);
         }
-    };
+    }
 
-    private void startRace(View view) {
-        if (timer != null || isRacing) {
+    void startRace(View view) {
+        if (isRacing || timer != null) {
             return;
         }
-
         isRacing = true;
         Log.d(TAG, "Race started.");
-        for (int i = 0; i < 3; i++) {
-            speed[i] = INIT_SPEED;
+
+        initRace();
+        for (int i = 0; i < HORSE_COUNT; i++) {
             Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
         }
+        raceTask = new RaceTask();
         timer = new Timer();
-        timer.schedule(timerTask, 0, 100);
+        timer.schedule(raceTask, 0, CYCLE_LENGTH);
+    }
+
+    private void initRace() {
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            progress[i] = 0;
+            standings[i] = 2;
+            speed[i] = random.nextInt(INIT_SPEED_MAX - INIT_SPEED_MIN + 1) + INIT_SPEED_MIN;
+            lastSpeedChange[i] = 0;
+            horses[i].setProgress(0, true);
+        }
     }
 
     private void stopRace() {
@@ -162,5 +184,14 @@ public class RacingActivity extends AppCompatActivity {
             timer.cancel();
             timer = null;
         }
+        if (raceTask != null) {
+            raceTask.cancel();
+            raceTask = null;
+        }
+    }
+
+    void resetRace(View view) {
+        stopRace();
+        initRace();
     }
 }
