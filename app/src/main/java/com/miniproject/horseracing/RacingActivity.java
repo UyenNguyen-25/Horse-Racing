@@ -26,6 +26,10 @@ public class RacingActivity extends AppCompatActivity {
     final int HORSE_COUNT = 3;
     SeekBar[] horses = new SeekBar[HORSE_COUNT];
 
+    public RacingActivity() {
+        sound = null;
+    }
+
     private enum RaceState {
         READY,
         ONGOING,
@@ -34,6 +38,8 @@ public class RacingActivity extends AppCompatActivity {
 
     ;
     private RaceState raceState;
+
+    MediaPlayer sound;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -158,7 +164,7 @@ public class RacingActivity extends AppCompatActivity {
             if (finished == HORSE_COUNT) {
                 raceState = RaceState.COMPLETED;
                 stopRace();
-//                showResults();
+                showResults();
                 // TODO: Show results dialog
                 // TODO: Payout
             }
@@ -179,36 +185,34 @@ public class RacingActivity extends AppCompatActivity {
             }
         }
 
-//        private void showResults() {
-//            String ordinalSuffix;
-//            Log.d(TAG, "===== RESULTS =====");
-//            for (int i = 0; i < HORSE_COUNT; i++) {
-//                if (i == 0) {
-//                    ordinalSuffix = "st";
-//                } else if (i == 1) {
-//                    ordinalSuffix = "nd";
-//                } else if (i == 2) {
-//                    ordinalSuffix = "rd";
-//                } else ordinalSuffix = "th";
-//                Log.d(TAG, (i + 1) + ordinalSuffix + " Place : Horse " + (invStandings[i] + 1));
-//            }
-//            Log.d(TAG, "===================");
-//        }
+        private void showResults() {
+            String ordinalSuffix;
+            Log.d(TAG, "===== RESULTS =====");
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                if (i == 0) {
+                    ordinalSuffix = "st";
+                } else if (i == 1) {
+                    ordinalSuffix = "nd";
+                } else if (i == 2) {
+                    ordinalSuffix = "rd";
+                } else ordinalSuffix = "th";
+                Log.d(TAG, (i + 1) + ordinalSuffix + " Place : Horse " + (invStandings[i] + 1));
+            }
+            Log.d(TAG, "===================");
+        }
     }
 
-    void startSound(boolean isFinish){
-        MediaPlayer sound = MediaPlayer.create(this, R.raw.horse_sound);
+    void startSound(){
+        sound = MediaPlayer.create(this, R.raw.horse_sound);
         sound.start();
-        if (!isFinish) {
-            sound.setLooping(true);
-        }else {
-            sound.setLooping(false);
-        }
+    }
+
+    void stopSound(){
+        sound.stop();
     }
 
     void startRace(View view) {
         if (raceState != RaceState.READY) return;
-        boolean isFinish = false;
         raceState = RaceState.ONGOING;
         Log.d(TAG, "Race started.");
 
@@ -218,7 +222,7 @@ public class RacingActivity extends AppCompatActivity {
         raceTask = new RaceTask();
         timer = new Timer();
         timer.schedule(raceTask, 0, CYCLE_LENGTH);
-        startSound(isFinish);
+        startSound();
     }
 
     private void initRace() {
@@ -233,7 +237,6 @@ public class RacingActivity extends AppCompatActivity {
     }
 
     private void stopRace() {
-        boolean isFinish = true;
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -242,11 +245,12 @@ public class RacingActivity extends AppCompatActivity {
             raceTask.cancel();
             raceTask = null;
         }
-startSound(isFinish);
+        stopSound();
     }
 
     void resetRace(View view) {
         stopRace();
         initRace();
+        stopSound();
     }
 }
