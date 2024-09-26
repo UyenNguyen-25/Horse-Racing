@@ -1,5 +1,6 @@
 package com.miniproject.horseracing;
 
+import android.annotation.SuppressLint;
 import android.icu.math.BigDecimal;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +34,7 @@ public class RacingActivity extends AppCompatActivity {
     ;
     private RaceState raceState;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +50,7 @@ public class RacingActivity extends AppCompatActivity {
         horses[2] = findViewById(R.id.seekBar3);
         for (int i = 0; i < HORSE_COUNT; i++) {
             horses[i].setProgress(0, false);
+            horses[i].setOnTouchListener((v, e) -> true);
         }
 
         btnStart.setOnClickListener(this::startRace);
