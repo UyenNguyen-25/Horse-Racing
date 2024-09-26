@@ -59,7 +59,7 @@ public class RacingActivity extends AppCompatActivity {
 
     // FIXME: Maybe have an algorithm initialize these dynamically based on the number of horses?
     final float[] CHANCE_BIAS = new float[]{-0.2f, 0f, 0.2f};
-    final int[] SPEED_BIAS = new int[]{0, 0, 1};
+    final int[] SPEED_BIAS = new int[]{-1, 0, 1};
 
     private final int[] progress = new int[HORSE_COUNT];
     private final int[] standings = new int[HORSE_COUNT]; // standings[horse] = place
@@ -72,8 +72,12 @@ public class RacingActivity extends AppCompatActivity {
 
     class RaceTask extends TimerTask {
 
+        private int cycle = 0;
+
         @Override
         public void run() {
+            Log.d(TAG, "--- CYCLE " + ++cycle + " ---");
+
             int lastChange;
             float chance;
             int bias;
@@ -94,29 +98,29 @@ public class RacingActivity extends AppCompatActivity {
                 } else {
                     chance = 1;
                 }
-                if (random.nextFloat() < chance + CHANCE_BIAS[standings[i] - 1]) {
+                if (random.nextFloat() < chance + CHANCE_BIAS[standings[i]]) {
                     lastSpeedChange[i] = 0;
                     // Rubberband mechanics: If behind, more likely to speed up
-                    bias = SPEED_BIAS[standings[i] - 1];
+                    bias = SPEED_BIAS[standings[i]];
                     // Actually change speed here
                     speedChange = (random.nextInt(2 * MAX_SPEED_CHANGE + 1) - MAX_SPEED_CHANGE + bias);
                     speed[i] += speedChange;
                     if (speed[i] < MIN_SPEED) speed[i] = MIN_SPEED;
                     if (speed[i] > MAX_SPEED) speed[i] = MAX_SPEED;
                     Log.d(TAG, "Horse " + (i + 1) + " has changed speed!"
-                            + " : Change=" + speedChange + " Bias=" + bias);
+                            + " - Change=" + speedChange + " Bias=" + bias);
                 }
 
                 // Increase progress by speed
                 progress[i] += speed[i];
-
+                if (progress[i] > 100) progress[i] = 100;
             }
             updateStandings();
 
             // Animate the horses
             for (int i = 0; i < HORSE_COUNT; i++) {
                 horses[i].setProgress(progress[i], true);
-                Log.d(TAG, "Horse " + (i + 1) + " : Standing=" + standings[i]
+                Log.d(TAG, "Horse " + (i + 1) + " : Standing=" + (standings[i] + 1)
                         + " Progress=" + progress[i] + " Speed=" + speed[i]);
             }
 
@@ -129,15 +133,18 @@ public class RacingActivity extends AppCompatActivity {
             }
         }
 
-        Integer[] placements = new Integer[HORSE_COUNT]; // placements[place] = horse
+        private final Integer[] invStandings = new Integer[HORSE_COUNT]; // invStandings[place] = horse
+
+        {
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                invStandings[i] = i;
+            }
+        }
 
         private void updateStandings() {
+            Arrays.sort(invStandings, (o1, o2) -> progress[o2] - progress[o1]);
             for (int i = 0; i < HORSE_COUNT; i++) {
-                placements[i] = i;
-            }
-            Arrays.sort(placements, (o1, o2) -> progress[o2] - progress[o1]);
-            for (int i = 0; i < HORSE_COUNT; i++) {
-                standings[placements[i]] = i + 1;
+                standings[invStandings[i]] = i;
             }
         }
     }
