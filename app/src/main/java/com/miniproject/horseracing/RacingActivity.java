@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,7 +21,8 @@ public class RacingActivity extends AppCompatActivity {
     private final double ODDS = 2;
     private BigDecimal balance = BigDecimal.valueOf(100);
 
-    SeekBar[] horses = new SeekBar[3];
+    final int HORSE_COUNT = 3;
+    SeekBar[] horses = new SeekBar[HORSE_COUNT];
     private boolean isRacing;
 
     @Override
@@ -46,7 +48,6 @@ public class RacingActivity extends AppCompatActivity {
         // TODO: Handle betting
     }
 
-    final int HORSE_COUNT = 3;
     final int INIT_SPEED_MIN = 1;
     final int INIT_SPEED_MAX = 3;
     final int MIN_SPEED = 2;
@@ -56,13 +57,14 @@ public class RacingActivity extends AppCompatActivity {
     final int SPEED_CHANGE_BREAKPOINT_1 = 4; // cycle(s)
     final int SPEED_CHANGE_BREAKPOINT_2 = 15; // cycle(s)
 
+    // FIXME: Maybe have an algorithm initialize these dynamically based on the number of horses?
     final float[] CHANCE_BIAS = new float[]{-0.2f, 0f, 0.2f};
     final int[] SPEED_BIAS = new int[]{0, 0, 1};
 
-    private final int[] progress = new int[3];
-    private final int[] standings = new int[3]; // standings[horse] = place
-    private final int[] speed = new int[3];
-    private final byte[] lastSpeedChange = new byte[3];
+    private final int[] progress = new int[HORSE_COUNT];
+    private final int[] standings = new int[HORSE_COUNT]; // standings[horse] = place
+    private final int[] speed = new int[HORSE_COUNT];
+    private final byte[] lastSpeedChange = new byte[HORSE_COUNT];
 
     private final Random random = new Random();
     private Timer timer;
@@ -107,14 +109,15 @@ public class RacingActivity extends AppCompatActivity {
 
                 // Increase progress by speed
                 progress[i] += speed[i];
-                updateStandings();
-                Log.d(TAG, "Horse " + (i + 1) + " : Standing=" + standings[i]
-                        + " Progress=" + progress[i] + " Speed=" + speed[i]);
+
             }
+            updateStandings();
 
             // Animate the horses
             for (int i = 0; i < HORSE_COUNT; i++) {
                 horses[i].setProgress(progress[i], true);
+                Log.d(TAG, "Horse " + (i + 1) + " : Standing=" + standings[i]
+                        + " Progress=" + progress[i] + " Speed=" + speed[i]);
             }
 
             // Determine if there's a winner
@@ -126,29 +129,16 @@ public class RacingActivity extends AppCompatActivity {
             }
         }
 
-        private void updateStandings() {
-            // FIXME: Is there a better way?
-            if (progress[0] > progress[1]) {
-                if (progress[1] > progress[2]) {
-                    setStandings(1, 2, 3);
-                } else if (progress[2] > progress[0]) {
-                    setStandings(2, 3, 1);
-                } else {
-                    setStandings(1, 3, 2);
-                }
-            } else { // [0] < [1]
-                if (progress[2] < progress[0]) {
-                    setStandings(2, 1, 3);
-                } else if (progress[2] > progress[1]) {
-                    setStandings(3, 2, 1);
-                } else {
-                    setStandings(3, 1, 2);
-                }
-            }
-        }
+        Integer[] placements = new Integer[HORSE_COUNT]; // placements[place] = horse
 
-        private void setStandings(int... s) {
-            System.arraycopy(s, 0, standings, 0, 3);
+        private void updateStandings() {
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                placements[i] = i;
+            }
+            Arrays.sort(placements, (o1, o2) -> progress[o2] - progress[o1]);
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                standings[placements[i]] = i + 1;
+            }
         }
     }
 
