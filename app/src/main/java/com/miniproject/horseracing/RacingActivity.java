@@ -1,6 +1,7 @@
 package com.miniproject.horseracing;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.icu.math.BigDecimal;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -64,6 +65,7 @@ public class RacingActivity extends AppCompatActivity {
         btnReset.setOnClickListener(this::resetRace);
         initRace();
 
+        btnLogout.setOnClickListener(this::logOut);
         // TODO: Handle betting
     }
 
@@ -252,5 +254,10 @@ public class RacingActivity extends AppCompatActivity {
         stopRace();
         initRace();
         stopSound();
+    }
+
+    void logOut(View view){
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 }
