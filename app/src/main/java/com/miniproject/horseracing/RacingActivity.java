@@ -2,6 +2,7 @@ package com.miniproject.horseracing;
 
 import android.annotation.SuppressLint;
 import android.icu.math.BigDecimal;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,10 @@ public class RacingActivity extends AppCompatActivity {
     final int HORSE_COUNT = 3;
     SeekBar[] horses = new SeekBar[HORSE_COUNT];
 
+    public RacingActivity() {
+        sound = null;
+    }
+
     private enum RaceState {
         READY,
         ONGOING,
@@ -33,6 +38,8 @@ public class RacingActivity extends AppCompatActivity {
 
     ;
     private RaceState raceState;
+
+    MediaPlayer sound;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -195,6 +202,15 @@ public class RacingActivity extends AppCompatActivity {
         }
     }
 
+    void startSound(){
+        sound = MediaPlayer.create(this, R.raw.horse_sound);
+        sound.start();
+    }
+
+    void stopSound(){
+        sound.stop();
+    }
+
     void startRace(View view) {
         if (raceState != RaceState.READY) return;
         raceState = RaceState.ONGOING;
@@ -206,6 +222,7 @@ public class RacingActivity extends AppCompatActivity {
         raceTask = new RaceTask();
         timer = new Timer();
         timer.schedule(raceTask, 0, CYCLE_LENGTH);
+        startSound();
     }
 
     private void initRace() {
@@ -228,10 +245,12 @@ public class RacingActivity extends AppCompatActivity {
             raceTask.cancel();
             raceTask = null;
         }
+        stopSound();
     }
 
     void resetRace(View view) {
         stopRace();
         initRace();
+        stopSound();
     }
 }
