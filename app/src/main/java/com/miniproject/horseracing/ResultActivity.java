@@ -43,15 +43,16 @@ public class ResultActivity extends AppCompatActivity {
         double bet1 = getIntent().getDoubleExtra("BET1", 0);
         double bet2 = getIntent().getDoubleExtra("BET2", 0);
         double bet3 = getIntent().getDoubleExtra("BET3", 0);
-        double ODDS = getIntent().getDoubleExtra("odds", 0);
         double total = getIntent().getDoubleExtra("total", 0);
         Log.d(TAG, "balanceValue: " + balanceValue);
-        Log.d(TAG, "total: " + total);
+        Log.d(TAG, "BET1: " + bet1);
+        Log.d(TAG, "BET2: " + bet2);
+        Log.d(TAG, "bet3: " + bet3);
 
         tvBalance.setText(String.format("%.0f", balanceValue));
         tvReward.setText(String.format("%.0f", total));
 
-        if (standings[0] == 1) {
+        if (standings[0] == 0) {
             tvWinningHorse.setText("Horse 1 Wins!");
             imgHorse1.setImageResource(R.drawable.horse_2);
             imgHorse2.setImageResource(R.drawable.horse_1);
@@ -59,7 +60,7 @@ public class ResultActivity extends AppCompatActivity {
             tvHorse2Bet.setText(String.format("%.0f", bet1));
             tvHorse1Bet.setText(String.format("%.0f", bet2));
             tvHorse3Bet.setText(String.format("%.0f", bet3));
-        } else if (standings[1] == 1) {
+        } else if (standings[1] == 0) {
             tvWinningHorse.setText("Horse 2 Wins!");
             imgHorse1.setImageResource(R.drawable.horse_1);
             imgHorse2.setImageResource(R.drawable.horse_2);
@@ -67,7 +68,7 @@ public class ResultActivity extends AppCompatActivity {
             tvHorse2Bet.setText(String.format("%.0f", bet2));
             tvHorse1Bet.setText(String.format("%.0f", bet1));
             tvHorse3Bet.setText(String.format("%.0f", bet3));
-        } else if (standings[2] == 1) {
+        } else if (standings[2] == 0) {
             tvWinningHorse.setText("Horse 3 Wins!");
             imgHorse1.setImageResource(R.drawable.horse_1);
             imgHorse2.setImageResource(R.drawable.horse_3);

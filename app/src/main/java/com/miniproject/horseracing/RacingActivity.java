@@ -217,8 +217,16 @@ public class RacingActivity extends AppCompatActivity {
             default:
                 return 0;
         }
+        if(horseBet[horseIndex] != 1) {
+            return 0;
+        }
         try {
             String betAmountStr = editText.getText().toString();
+            if(betAmountStr.isEmpty()) {
+                return 0;
+            }
+
+            Log.d(TAG, "getBetAmount: " + betAmountStr);
             return Integer.parseInt(betAmountStr);
         } catch (NumberFormatException e) {
             System.out.println("the text show when have error");
@@ -227,6 +235,7 @@ public class RacingActivity extends AppCompatActivity {
     }
 
     private BigDecimal calculateWinnings(int winningHorseId) {
+        Log.d(TAG, "calculateWinnings: " + winningHorseId);
         int betAmount = getBetAmount(winningHorseId);
         if (betAmount == 0) {
             return null;
@@ -242,10 +251,11 @@ public class RacingActivity extends AppCompatActivity {
         getCheckedHorses();
         for (int i = 0; i < HORSE_COUNT; i++) {
             if (horseBet[i] == 1) {
+                Log.d(TAG, "getTotalBetAmount: " + i);
                 double bet = getBetAmount(i);
                 totalBet += bet;
                 bets[i] = bet;
-            }
+            } else bets[i] = 0;
         }
         return totalBet;
     }
@@ -331,14 +341,14 @@ public class RacingActivity extends AppCompatActivity {
             if (finished == HORSE_COUNT) {
                 raceState = RaceState.COMPLETED;
                 stopRace();
+                stopSound();
                 showResults();
                 // Payout
                 int winningHorseId = invStandings[0];
                 if (winningHorseId != -1) {
                     calculateWinnings(winningHorseId);
-                    stopRace();
-                    initRace();
-                    stopSound();
+
+
 //            for (int i = 0; i < standings.length; i++) {
 //                System.out.println("standings[" + i + "]: " + standings[i]);
 //            }
@@ -351,6 +361,8 @@ public class RacingActivity extends AppCompatActivity {
                     intent.putExtra("BET2", bets[1]);
                     intent.putExtra("BET3", bets[2]);
                     intent.putExtra("total", total);
+                    startActivity(intent);
+                    initRace();
                 } else {
                     Log.d("TAG", "error when calculate winner");
                 }
@@ -430,7 +442,7 @@ public class RacingActivity extends AppCompatActivity {
     private void initRace() {
         for (int i = 0; i < HORSE_COUNT; i++) {
             progress[i] = 0;
-            standings[i] = 2;
+            standings[i] = 1;
             speed[i] = random.nextInt(INIT_SPEED_MAX - INIT_SPEED_MIN + 1) + INIT_SPEED_MIN;
             lastSpeedChange[i] = 0;
             horses[i].setProgress(0, true);
