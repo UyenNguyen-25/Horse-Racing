@@ -23,7 +23,7 @@ import java.util.TimerTask;
 
 public class RacingActivity extends AppCompatActivity {
     private final String TAG = "RacingActivity";
-
+    private TextView moneyResult;
     private final double ODDS = 2;
     private BigDecimal balance = BigDecimal.valueOf(100);
 
@@ -52,7 +52,7 @@ public class RacingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_racing);
-
+        moneyResult = findViewById(R.id.moneyResult);
         Button btnStart = findViewById(R.id.btnStart);
         Button btnReset = findViewById(R.id.btnReset);
         Button btnLogout = findViewById(R.id.btnLogout);
@@ -65,7 +65,23 @@ public class RacingActivity extends AppCompatActivity {
             horses[i].setOnTouchListener((v, e) -> true);
         }
 
-        btnStart.setOnClickListener(this::startRace);
+//        btnStart.setOnClickListener(this::startRace);
+        btnStart.setOnClickListener(view -> {
+            int totalBetAmount = getTotalBetAmount();
+            System.out.println(totalBetAmount);
+            if (checkValidateBalance(totalBetAmount)) {
+                BigDecimal bet = new BigDecimal(totalBetAmount);
+                balance = balance.subtract(bet);
+                System.out.println("After bet:" + balance);
+                runOnUiThread(() -> {
+                    moneyResult.setText(balance.toString());
+                });
+                startRace();
+
+            } else {
+                Toast.makeText(this, "Bạn không đủ tiền để đặt cược.", Toast.LENGTH_SHORT).show();
+            }
+        });
         btnReset.setOnClickListener(this::resetRace);
         initRace();
 
@@ -111,32 +127,40 @@ public class RacingActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.add_balance_popup);
         TextView balanceTextView = dialog.findViewById(R.id.balanceTextView);
         final EditText addAmountEditText = dialog.findViewById(R.id.addAmount);
-        final TextView selectedBalanceTextView = dialog.findViewById(R.id.selectedBalanceTextView);
         Button btnAdd = dialog.findViewById(R.id.btnAddMoney);
+        balanceTextView.setText("Current Balance: " + balance.toString()+ " $");
         Button closeButton = dialog.findViewById(R.id.close_button);
-
-        balanceTextView.setText("Current Balance: $" + balance.toString());
-
-        selectedBalanceTextView.setText("Selected Amount: $0");
-
         btnAdd.setOnClickListener(view -> {
             Log.d("TAG", "Add button clicked!");
             String amountStr = addAmountEditText.getText().toString();
-
             if (!amountStr.isEmpty()) {
                 try {
                     BigDecimal amount = new BigDecimal(amountStr);
-                    balance.add(amount);
-                    Log.d("TAG", String.valueOf(balance));
+                    balance = balance.add(amount);
+                    System.out.println("Updated balance: " + balance); // Check balance value here
+                    // Update UI element (if applicable)
+                    runOnUiThread(() -> {
+                        balanceTextView.setText("Current Balance: " + balance.toString() +" $");
+
+                    });
+
                 } catch (NumberFormatException e) {
                     Toast.makeText(this, "Invalid amount format", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show();
             }
         });
 
         closeButton.setOnClickListener(view -> {
             dialog.dismiss();
         });
+
+        dialog.setOnDismissListener(dialog1 -> {
+            moneyResult.setText(balance.toString());
+        });
+
+
         dialog.show();
     }
 
@@ -182,19 +206,23 @@ public class RacingActivity extends AppCompatActivity {
             String betAmountStr = editText.getText().toString();
             return Integer.parseInt(betAmountStr);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Invalid bet amount. Please enter a number.", Toast.LENGTH_SHORT).show();
+            System.out.println("the text show when have error");
             return 0;
         }
     }
     private BigDecimal calculateWinnings(int winningHorseId) {
         int betAmount = getBetAmount(winningHorseId);
-
-        BigDecimal winnings = BigDecimal.valueOf(betAmount).multiply(BigDecimal.valueOf(2));
-        balance = balance.add(winnings);
-        return winnings;
+        if (betAmount ==0){
+            return null;
+        } else {
+            BigDecimal winnings = BigDecimal.valueOf(betAmount).multiply(BigDecimal.valueOf(2));
+            balance = balance.add(winnings);
+            return winnings;
+        }
     }
     private int getTotalBetAmount() {
         int totalBet = 0;
+        getCheckedHorses();
         for (int i = 0; i < HORSE_COUNT; i++) {
             if (horseBet[i] == 1) {
                 totalBet += getBetAmount(i);
@@ -290,7 +318,9 @@ public class RacingActivity extends AppCompatActivity {
                 int winningHorseId = getWinningHorseId(standings);
                 if (winningHorseId != -1) {
                     calculateWinnings(winningHorseId);
-                    Log.d("TAG","Ok u win");
+                    stopRace();
+                    initRace();
+                    stopSound();
 //            for (int i = 0; i < standings.length; i++) {
 //                System.out.println("standings[" + i + "]: " + standings[i]);
 //            }
@@ -329,6 +359,9 @@ public class RacingActivity extends AppCompatActivity {
                 Log.d(TAG, (i + 1) + ordinalSuffix + " Place : Horse " + (invStandings[i] + 1));
             }
             Log.d(TAG, "===================");
+            runOnUiThread(() -> {
+                moneyResult.setText(balance.toString());
+            });
         }
     }
 
@@ -352,39 +385,18 @@ public class RacingActivity extends AppCompatActivity {
         return winningHorseId;
     }
 
-    void startRace(View view) {
-        if (isRacing || timer != null) {
-            return;
+    void startRace() {
+        if (raceState != RaceState.READY) return;
+        raceState = RaceState.ONGOING;
+        Log.d(TAG, "Race started.");
+
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
         }
-
-        int totalBetAmount = getTotalBetAmount();
-        if (checkValidateBalance(totalBetAmount)){
-            balance = balance.subtract(BigDecimal.valueOf(totalBetAmount));
-            isRacing = true;
-            Log.d(TAG, "Race started.");
-            initRace();
-            for (int i = 0; i < HORSE_COUNT; i++) {
-                Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
-            }
-            raceTask = new RaceTask();
-            timer = new Timer();
-            timer.schedule(raceTask, 0, CYCLE_LENGTH);
-
-            if (raceState != RaceState.READY) return;
-            raceState = RaceState.ONGOING;
-            Log.d(TAG, "Race started.");
-
-            for (int i = 0; i < HORSE_COUNT; i++) {
-                Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
-            }
-            raceTask = new RaceTask();
-            timer = new Timer();
-            timer.schedule(raceTask, 0, CYCLE_LENGTH);
-            startSound();
-        } else {
-            Toast.makeText(this, "Vui lòng nhập số tiền cược hợp lệ", Toast.LENGTH_SHORT).show();
-            System.out.println(checkValidateBalance(totalBetAmount));
-        }
+        raceTask = new RaceTask();
+        timer = new Timer();
+        timer.schedule(raceTask, 0, CYCLE_LENGTH);
+        startSound();
     }
 
     private void initRace() {
