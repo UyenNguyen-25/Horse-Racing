@@ -1,7 +1,11 @@
 package com.miniproject.horseracing;
 
 import android.app.Dialog;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.icu.math.BigDecimal;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +13,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +36,23 @@ public class RacingActivity extends AppCompatActivity {
     final int HORSE_COUNT = 3;
     SeekBar[] horses = new SeekBar[HORSE_COUNT];
     private boolean isRacing;
-    List<Integer> horseBetPlace = new ArrayList<>();
+
+    public RacingActivity() {
+        sound = null;
+    }
+
+    private enum RaceState {
+        READY,
+        ONGOING,
+        COMPLETED
+    }
+
+    ;
+    private RaceState raceState;
+
+    MediaPlayer sound;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,30 +68,37 @@ public class RacingActivity extends AppCompatActivity {
         horses[2] = findViewById(R.id.seekBar3);
         for (int i = 0; i < HORSE_COUNT; i++) {
             horses[i].setProgress(0, false);
+            horses[i].setOnTouchListener((v, e) -> true);
         }
 
         btnStart.setOnClickListener(this::startRace);
         btnReset.setOnClickListener(this::resetRace);
+        initRace();
 
         // Handle Add Balance
         btnAddBalance.setOnClickListener(view -> {
             showAddMenu();
         });
-
+        btnLogout.setOnClickListener(this::logOut);
         // TODO: Handle betting
     }
 
+    // NOTE: If an INIT_SPEED is outside the range of [MIN_SPEED, MAX_SPEED],
+    // the horse's speed will be clamped the first time it attempts to change speed.
+    // This is an intended behavior meant to emulate "starting speed burst/slump".
     final int INIT_SPEED_MIN = 1;
-    final int INIT_SPEED_MAX = 3;
+    final int INIT_SPEED_MAX = 6;
     final int MIN_SPEED = 2;
     final int MAX_SPEED = 5;
-    final int MAX_SPEED_CHANGE = 2;
+    final int SPEED_CHANGE_RANGE = 2;
+    final int FINAL_STRETCH_POINT = 85;
+
     final int CYCLE_LENGTH = 100; // millisecond(s)
     final int SPEED_CHANGE_BREAKPOINT_1 = 4; // cycle(s)
     final int SPEED_CHANGE_BREAKPOINT_2 = 15; // cycle(s)
 
     // FIXME: Maybe have an algorithm initialize these dynamically based on the number of horses?
-    final float[] CHANCE_BIAS = new float[]{-0.2f, 0f, 0.2f};
+    final float[] CHANCE_BIAS = new float[]{0.2f, 0f, 0.2f};
     final int[] SPEED_BIAS = new int[]{-1, 0, 1};
 
     private final int[] progress = new int[HORSE_COUNT];
@@ -158,16 +184,18 @@ public class RacingActivity extends AppCompatActivity {
             default:
                 return 0;
         }
-        String betAmountStr = editText.getText().toString();
         try {
+            String betAmountStr = editText.getText().toString();
             return Integer.parseInt(betAmountStr);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Vui lòng nhập số tiền cược hợp lệ", Toast.LENGTH_SHORT).show();
-            return 0;
+            // Handle exception (e.g., show a toast or dialog)
+            Toast.makeText(this, "Invalid bet amount. Please enter a number.", Toast.LENGTH_SHORT).show();
+            return 0; // Or return a default value like 0
         }
     }
     private BigDecimal calculateWinnings(int winningHorseId) {
         int betAmount = getBetAmount(winningHorseId);
+
         BigDecimal winnings = BigDecimal.valueOf(betAmount).multiply(BigDecimal.valueOf(2));
         balance = balance.add(winnings);
         return winnings;
@@ -196,6 +224,7 @@ public class RacingActivity extends AppCompatActivity {
     class RaceTask extends TimerTask {
 
         private int cycle = 0;
+        private int finished = 0;
 
         @Override
         public void run() {
@@ -206,38 +235,49 @@ public class RacingActivity extends AppCompatActivity {
             int bias;
             int speedChange;
             for (int i = 0; i < HORSE_COUNT; i++) {
-                // Increment lastChanged
-                lastChange = ++lastSpeedChange[i];
+                // Check if this horse is still in the race
+                if (progress[i] < 100) {
+                    // Increment lastChanged
+                    lastChange = ++lastSpeedChange[i];
 
-                // Randomly decides whether to change speed; if true, reset lastChanged
-                // Probability:
-                //      (..1st_breakpoint) = 0%
-                //      [1st_breakpoint,2nd_breakpoint) = 0..100%
-                //      [2nd_breakpoint..) = 100%
-                if (lastChange < SPEED_CHANGE_BREAKPOINT_1) {
-                    chance = 0;
-                } else if (lastChange < SPEED_CHANGE_BREAKPOINT_2) {
-                    chance = 1 - (float) (SPEED_CHANGE_BREAKPOINT_2 - lastChange) / (SPEED_CHANGE_BREAKPOINT_2 - SPEED_CHANGE_BREAKPOINT_1);
-                } else {
-                    chance = 1;
-                }
-                if (random.nextFloat() < chance + CHANCE_BIAS[standings[i]]) {
-                    lastSpeedChange[i] = 0;
-                    // Rubberband mechanics: If behind, more likely to speed up
-                    bias = SPEED_BIAS[standings[i]];
-                    // Actually change speed here
-                    speedChange = (random.nextInt(2 * MAX_SPEED_CHANGE + 1) - MAX_SPEED_CHANGE + bias);
-                    speed[i] += speedChange;
-                    if (speed[i] < MIN_SPEED) speed[i] = MIN_SPEED;
-                    if (speed[i] > MAX_SPEED) speed[i] = MAX_SPEED;
-                    Log.d(TAG, "Horse " + (i + 1) + " has changed speed!"
-                            + " - Change=" + speedChange + " Bias=" + bias);
-                }
+                    // Randomly decides whether to change speed; if true, reset lastChanged
+                    // Probability:
+                    //      (..1st_breakpoint) = 0%
+                    //      [1st_breakpoint,2nd_breakpoint) = 0..100%
+                    //      [2nd_breakpoint..) = 100%
+                    if (lastChange < SPEED_CHANGE_BREAKPOINT_1) {
+                        chance = 0;
+                    } else if (lastChange < SPEED_CHANGE_BREAKPOINT_2) {
+                        chance = 1 - (float) (SPEED_CHANGE_BREAKPOINT_2 - lastChange) / (SPEED_CHANGE_BREAKPOINT_2 - SPEED_CHANGE_BREAKPOINT_1);
+                    } else {
+                        chance = 1;
+                    }
+                    if (random.nextFloat() < chance + CHANCE_BIAS[standings[i]]) {
+                        lastSpeedChange[i] = 0;
+                        // Rubberband mechanics: If behind, more likely to speed up
+                        bias = SPEED_BIAS[standings[i]];
+                        speedChange = (random.nextInt(2 * SPEED_CHANGE_RANGE + 1) - SPEED_CHANGE_RANGE + bias);
+                        // No slowing down in the final stretch
+                        if (speedChange < 0 && progress[i] >= FINAL_STRETCH_POINT) speedChange = 0;
 
-                // Increase progress by speed
-                progress[i] += speed[i];
-                if (progress[i] > 100) progress[i] = 100;
+                        speed[i] += speedChange;
+                        if (speed[i] < MIN_SPEED) speed[i] = MIN_SPEED;
+                        if (speed[i] > MAX_SPEED) speed[i] = MAX_SPEED;
+                        Log.d(TAG, "Horse " + (i + 1) + " has changed speed!"
+                                + " - Change=" + speedChange + " Bias=" + bias);
+                    }
+
+                    // Increase progress by speed
+                    progress[i] += speed[i];
+                    if (progress[i] >= 100) {
+                        progress[i] = 100;
+                        finished++;
+                        Log.d(TAG, "Horse " + (i + 1) + " has finished! "
+                                + (HORSE_COUNT - finished) + " more still in the race.");
+                    }
+                }
             }
+
             updateStandings();
 
             // Animate the horses
@@ -248,11 +288,12 @@ public class RacingActivity extends AppCompatActivity {
             }
 
             // Determine if there's a winner
-            for (int i = 0; i < HORSE_COUNT; i++) {
-                if (progress[i] >= 100) {
-                    stopRace();
-                    // TODO: Show results
-                }
+            if (finished == HORSE_COUNT) {
+                raceState = RaceState.COMPLETED;
+                stopRace();
+                showResults();
+                // TODO: Show results dialog
+                // TODO: Payout
             }
         }
 
@@ -270,6 +311,31 @@ public class RacingActivity extends AppCompatActivity {
                 standings[invStandings[i]] = i;
             }
         }
+
+        private void showResults() {
+            String ordinalSuffix;
+            Log.d(TAG, "===== RESULTS =====");
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                if (i == 0) {
+                    ordinalSuffix = "st";
+                } else if (i == 1) {
+                    ordinalSuffix = "nd";
+                } else if (i == 2) {
+                    ordinalSuffix = "rd";
+                } else ordinalSuffix = "th";
+                Log.d(TAG, (i + 1) + ordinalSuffix + " Place : Horse " + (invStandings[i] + 1));
+            }
+            Log.d(TAG, "===================");
+        }
+    }
+
+    void startSound(){
+        sound = MediaPlayer.create(this, R.raw.horse_sound);
+        sound.start();
+    }
+
+    void stopSound(){
+        sound.stop();
     }
     public int getWinningHorseId(int[] standings) {
         int minStanding = standings[0];
@@ -289,7 +355,7 @@ public class RacingActivity extends AppCompatActivity {
         }
 
         int totalBetAmount = getTotalBetAmount();
-        if (!checkValidateBalance(totalBetAmount)) {
+        if (checkValidateBalance(totalBetAmount)){
             balance = balance.subtract(BigDecimal.valueOf(totalBetAmount));
             isRacing = true;
             Log.d(TAG, "Race started.");
@@ -300,11 +366,22 @@ public class RacingActivity extends AppCompatActivity {
             raceTask = new RaceTask();
             timer = new Timer();
             timer.schedule(raceTask, 0, CYCLE_LENGTH);
+
+            if (raceState != RaceState.READY) return;
+            raceState = RaceState.ONGOING;
+            Log.d(TAG, "Race started.");
+
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
+            }
+            raceTask = new RaceTask();
+            timer = new Timer();
+            timer.schedule(raceTask, 0, CYCLE_LENGTH);
+            startSound();
         } else {
             Toast.makeText(this, "Vui lòng nhập số tiền cược hợp lệ", Toast.LENGTH_SHORT).show();
+            System.out.println(checkValidateBalance(totalBetAmount));
         }
-
-
     }
 
     private void initRace() {
@@ -315,10 +392,10 @@ public class RacingActivity extends AppCompatActivity {
             lastSpeedChange[i] = 0;
             horses[i].setProgress(0, true);
         }
+        raceState = RaceState.READY;
     }
 
     private void stopRace() {
-        isRacing = false;
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -332,17 +409,23 @@ public class RacingActivity extends AppCompatActivity {
             // Calculate winnings only if there's a winner
             calculateWinnings(winningHorseId);
             Log.d("TAG","Ok u win");
-            for (int i = 0; i < standings.length; i++) {
-                System.out.println("standings[" + i + "]: " + standings[i]);
-            }
+//            for (int i = 0; i < standings.length; i++) {
+//                System.out.println("standings[" + i + "]: " + standings[i]);
+//            }
         } else {
             Log.d("TAG","error when calculate winner");
         }
-
+        stopSound();
     }
 
     void resetRace(View view) {
         stopRace();
         initRace();
+        stopSound();
+    }
+
+    void logOut(View view){
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 }
