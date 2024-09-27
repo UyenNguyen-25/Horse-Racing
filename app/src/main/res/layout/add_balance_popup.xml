@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <!-- Display the current balance -->
+    <TextView
+        android:id="@+id/balanceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Balance: $1000" />
+    <!-- Display the selected balance to add -->
+    <EditText
+        android:id="@+id/addAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/selectedBalanceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected Amount: $0" />
+
+    <!-- Button to add balance -->
+    <Button
+        android:id="@+id/btnAddMoney"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Balance" />
+
+    <!-- Button to close the popup -->
+    <Button
+        android:id="@+id/close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Close" />
+
+</LinearLayout>

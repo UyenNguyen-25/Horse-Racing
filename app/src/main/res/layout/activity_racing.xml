@@ -29,9 +29,9 @@
 
         <SeekBar
             android:id="@+id/seekBar1"
-            android:layout_width="match_parent"
+            android:layout_width="390dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25dp"
+            android:layout_marginHorizontal="5dp"
             android:layout_marginTop="100dp"
             android:progress="80"
             android:progressDrawable="@drawable/bg_seekbar_racetrack"
@@ -41,9 +41,9 @@
 
         <SeekBar
             android:id="@+id/seekBar2"
-            android:layout_width="match_parent"
+            android:layout_width="390dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25dp"
+            android:layout_marginHorizontal="5dp"
             android:layout_marginTop="10dp"
             android:progress="20"
             android:progressDrawable="@drawable/bg_seekbar_racetrack"
@@ -53,9 +53,9 @@
 
         <SeekBar
             android:id="@+id/seekBar3"
-            android:layout_width="match_parent"
+            android:layout_width="390dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25dp"
+            android:layout_marginHorizontal="5dp"
             android:layout_marginTop="10dp"
             android:progress="50"
             android:progressDrawable="@drawable/bg_seekbar_racetrack"
@@ -67,10 +67,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="24dp"
         android:text="Your money ($): "
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@id/moneyResult"
+        app:layout_constraintEnd_toStartOf="@+id/moneyResult"
         app:layout_constraintTop_toBottomOf="@id/layoutRacing"
         tools:ignore="HardcodedText" />
 
@@ -81,10 +81,10 @@
         android:text="100.0"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@id/moneyTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.744"
+        app:layout_constraintEnd_toStartOf="@+id/btnAddBalance"
+        app:layout_constraintHorizontal_bias="0.807"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutRacing"
+        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText,MissingConstraints" />
 
@@ -93,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="72dp"
-        android:text="Orange Horse"
+        android:text="Brown Horse"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.11"
@@ -109,7 +109,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:text="Blue Horse"
+        android:text="Red Horse"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/checkBox1"
         tools:ignore="HardcodedText" />
@@ -119,55 +119,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="White horse"
+        android:text="Yellow horse"
         app:layout_constraintStart_toStartOf="@id/checkBox2"
         app:layout_constraintTop_toBottomOf="@id/checkBox2"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/horse1m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="0 cm/min"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@id/checkBox1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.181"
-        app:layout_constraintStart_toEndOf="@id/checkBox1"
-        app:layout_constraintTop_toBottomOf="@id/moneyTitle"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/horse2m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="0 cm/min"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@id/checkBox2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.254"
-        app:layout_constraintStart_toEndOf="@id/checkBox2"
-        app:layout_constraintTop_toBottomOf="@id/horse1m"
-        app:layout_constraintVertical_bias="0.23"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/horse3m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="44dp"
-        android:text="0 cm/min"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@id/checkBox3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.107"
-        app:layout_constraintStart_toEndOf="@id/checkBox3"
-        app:layout_constraintTop_toBottomOf="@id/horse2m"
-        app:layout_constraintVertical_bias="0.1"
         tools:ignore="HardcodedText" />
 
     <EditText
@@ -208,6 +162,17 @@
         tools:ignore="HardcodedText" />
 
     <Button
+        android:id="@+id/btnAddBalance"
+        android:layout_width="115dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="40dp"
+        android:text="Add more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
+        tools:ignore="HardcodedText" />
+
+    <Button
         android:id="@+id/btnStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -222,7 +187,7 @@
         android:id="@+id/btnReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
+        android:layout_marginStart="28dp"
         android:text="Reset"
         app:layout_constraintBottom_toBottomOf="@id/btnStart"
         app:layout_constraintStart_toEndOf="@id/btnStart"
@@ -257,14 +222,15 @@
         android:id="@+id/editTextNumber"
         android:layout_width="76dp"
         android:layout_height="43dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginTop="76dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="0.0$"
         android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="@id/checkBox1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/horse1m"
+        app:layout_constraintHorizontal_bias="0.465"
+        app:layout_constraintStart_toEndOf="@+id/checkBox1"
+        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
         tools:ignore="HardcodedText" />
 
     <EditText
@@ -277,12 +243,14 @@
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="@id/checkBox2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/horse2m"
-        app:layout_constraintTop_toBottomOf="@id/editTextNumber"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toEndOf="@+id/checkBox2"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumber"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText" />
 
     <EditText
+        android:id="@+id/editTextNumber3"
         android:layout_width="76dp"
         android:layout_height="43dp"
         android:autofillHints=""
@@ -291,9 +259,12 @@
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="@id/checkBox3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/horse1m"
-        app:layout_constraintTop_toBottomOf="@id/editTextNumber2"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toEndOf="@+id/checkBox3"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumber2"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

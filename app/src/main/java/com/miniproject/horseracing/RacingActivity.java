@@ -1,16 +1,25 @@
 package com.miniproject.horseracing;
 
+import android.app.Dialog;
 import android.icu.math.BigDecimal;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,7 +33,7 @@ public class RacingActivity extends AppCompatActivity {
     final int HORSE_COUNT = 3;
     SeekBar[] horses = new SeekBar[HORSE_COUNT];
     private boolean isRacing;
-
+    List<Integer> horseBetPlace = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +43,7 @@ public class RacingActivity extends AppCompatActivity {
         Button btnStart = findViewById(R.id.btnStart);
         Button btnReset = findViewById(R.id.btnReset);
         Button btnLogout = findViewById(R.id.btnLogout);
-
+        Button btnAddBalance = findViewById(R.id.btnAddBalance);
         horses[0] = findViewById(R.id.seekBar1);
         horses[1] = findViewById(R.id.seekBar2);
         horses[2] = findViewById(R.id.seekBar3);
@@ -44,6 +53,11 @@ public class RacingActivity extends AppCompatActivity {
 
         btnStart.setOnClickListener(this::startRace);
         btnReset.setOnClickListener(this::resetRace);
+
+        // Handle Add Balance
+        btnAddBalance.setOnClickListener(view -> {
+            showAddMenu();
+        });
 
         // TODO: Handle betting
     }
@@ -62,13 +76,122 @@ public class RacingActivity extends AppCompatActivity {
     final int[] SPEED_BIAS = new int[]{-1, 0, 1};
 
     private final int[] progress = new int[HORSE_COUNT];
-    private final int[] standings = new int[HORSE_COUNT]; // standings[horse] = place
+    private final int[] standings = new int[HORSE_COUNT];// standings[horse] = place
+    private final int[] horseBet = new int[HORSE_COUNT];
     private final int[] speed = new int[HORSE_COUNT];
     private final byte[] lastSpeedChange = new byte[HORSE_COUNT];
 
     private final Random random = new Random();
     private Timer timer;
     private TimerTask raceTask;
+
+    private void showAddMenu() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.add_balance_popup);
+        TextView balanceTextView = dialog.findViewById(R.id.balanceTextView);
+        final EditText addAmountEditText = dialog.findViewById(R.id.addAmount);
+        final TextView selectedBalanceTextView = dialog.findViewById(R.id.selectedBalanceTextView);
+        Button btnAdd = dialog.findViewById(R.id.btnAddMoney);
+        Button closeButton = dialog.findViewById(R.id.close_button);
+
+        balanceTextView.setText("Current Balance: $" + balance.toString());
+
+        selectedBalanceTextView.setText("Selected Amount: $0");
+
+        btnAdd.setOnClickListener(view -> {
+            Log.d("TAG", "Add button clicked!");
+            String amountStr = addAmountEditText.getText().toString();
+
+            if (!amountStr.isEmpty()) {
+                try {
+                    BigDecimal amount = new BigDecimal(amountStr);
+                    balance.add(amount);
+                    Log.d("TAG", String.valueOf(balance));
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Invalid amount format", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        closeButton.setOnClickListener(view -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    private void getCheckedHorses() {
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            CheckBox checkBox = findViewById(getCheckBoxId(i));
+            if (checkBox.isChecked()) {
+                horseBet[i] = 1;
+            } else {
+                horseBet[i] = 0;
+            }
+        }
+    }
+
+    private int getCheckBoxId(int index) {
+        switch (index) {
+            case 0:
+                return R.id.checkBox1;
+            case 1:
+                return R.id.checkBox2;
+            case 2:
+                return R.id.checkBox3;
+            default:
+                return -1;
+        }
+    }
+    private int getBetAmount(int horseIndex) {
+        EditText editText;
+        switch (horseIndex) {
+            case 0:
+                editText = findViewById(R.id.editTextNumber);
+                break;
+            case 1:
+                editText = findViewById(R.id.editTextNumber2);
+                break;
+            case 2:
+                editText = findViewById(R.id.editTextNumber3);
+                break;
+            default:
+                return 0;
+        }
+        String betAmountStr = editText.getText().toString();
+        try {
+            return Integer.parseInt(betAmountStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Vui lòng nhập số tiền cược hợp lệ", Toast.LENGTH_SHORT).show();
+            return 0;
+        }
+    }
+    private BigDecimal calculateWinnings(int winningHorseId) {
+        int betAmount = getBetAmount(winningHorseId);
+        BigDecimal winnings = BigDecimal.valueOf(betAmount).multiply(BigDecimal.valueOf(2));
+        balance = balance.add(winnings);
+        return winnings;
+    }
+    private int getTotalBetAmount() {
+        int totalBet = 0;
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            if (horseBet[i] == 1) {
+                totalBet += getBetAmount(i);
+            }
+        }
+        return totalBet;
+    }
+
+    private boolean checkValidateBalance(int totalBetAmount) {
+        BigDecimal totalBet = BigDecimal.valueOf(totalBetAmount);
+        if (totalBet.compareTo(balance) <= 0) {
+            System.out.println("Bạn có đủ tiền để đặt cược.");
+            return true;
+        } else {
+            System.out.println("Số dư không đủ.");
+            return false;
+        }
+    }
 
     class RaceTask extends TimerTask {
 
@@ -148,21 +271,40 @@ public class RacingActivity extends AppCompatActivity {
             }
         }
     }
+    public int getWinningHorseId(int[] standings) {
+        int minStanding = standings[0];
+        int winningHorseId = 0;
+        for (int i = 1; i < standings.length; i++) {
+            if (standings[i] < minStanding) {
+                minStanding = standings[i];
+                winningHorseId = i;
+            }
+        }
+        return winningHorseId;
+    }
 
     void startRace(View view) {
         if (isRacing || timer != null) {
             return;
         }
-        isRacing = true;
-        Log.d(TAG, "Race started.");
 
-        initRace();
-        for (int i = 0; i < HORSE_COUNT; i++) {
-            Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
+        int totalBetAmount = getTotalBetAmount();
+        if (!checkValidateBalance(totalBetAmount)) {
+            balance = balance.subtract(BigDecimal.valueOf(totalBetAmount));
+            isRacing = true;
+            Log.d(TAG, "Race started.");
+            initRace();
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                Log.d(TAG, "Start speed for Horse" + (i + 1) + ": " + speed[i]);
+            }
+            raceTask = new RaceTask();
+            timer = new Timer();
+            timer.schedule(raceTask, 0, CYCLE_LENGTH);
+        } else {
+            Toast.makeText(this, "Vui lòng nhập số tiền cược hợp lệ", Toast.LENGTH_SHORT).show();
         }
-        raceTask = new RaceTask();
-        timer = new Timer();
-        timer.schedule(raceTask, 0, CYCLE_LENGTH);
+
+
     }
 
     private void initRace() {
@@ -185,6 +327,18 @@ public class RacingActivity extends AppCompatActivity {
             raceTask.cancel();
             raceTask = null;
         }
+        int winningHorseId = getWinningHorseId(standings);
+        if (winningHorseId != -1) {
+            // Calculate winnings only if there's a winner
+            calculateWinnings(winningHorseId);
+            Log.d("TAG","Ok u win");
+            for (int i = 0; i < standings.length; i++) {
+                System.out.println("standings[" + i + "]: " + standings[i]);
+            }
+        } else {
+            Log.d("TAG","error when calculate winner");
+        }
+
     }
 
     void resetRace(View view) {
