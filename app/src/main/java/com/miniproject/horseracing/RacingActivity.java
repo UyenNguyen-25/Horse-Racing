@@ -1,6 +1,7 @@
 package com.miniproject.horseracing;
-import android.app.Dialog;
+
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.icu.math.BigDecimal;
 import android.media.MediaPlayer;
@@ -14,8 +15,10 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Timer;
@@ -23,11 +26,22 @@ import java.util.TimerTask;
 
 public class RacingActivity extends AppCompatActivity {
     private final String TAG = "RacingActivity";
+
+    final int HORSE_COUNT = 3;
+
+    EditText betHorse1;
+    EditText betHorse2;
+    EditText betHorse3;
+    private double[] bets = new double[HORSE_COUNT];
+//    private double bet1 = 0;
+//    private double bet2 = 0;
+//    private double bet3 = 0;
+
     private TextView moneyResult;
     private final double ODDS = 2;
     private BigDecimal balance = BigDecimal.valueOf(100);
+    private BigDecimal oldBalance = BigDecimal.valueOf(0);
 
-    final int HORSE_COUNT = 3;
     SeekBar[] horses = new SeekBar[HORSE_COUNT];
     private boolean isRacing;
 
@@ -46,13 +60,13 @@ public class RacingActivity extends AppCompatActivity {
 
     MediaPlayer sound;
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_racing);
-        moneyResult = findViewById(R.id.moneyResult);
+        moneyResult = findViewById(R.id.tvBalance);
         Button btnStart = findViewById(R.id.btnStart);
         Button btnReset = findViewById(R.id.btnReset);
         Button btnLogout = findViewById(R.id.btnLogout);
@@ -67,6 +81,7 @@ public class RacingActivity extends AppCompatActivity {
 
 //        btnStart.setOnClickListener(this::startRace);
         btnStart.setOnClickListener(view -> {
+            oldBalance = balance;
             int totalBetAmount = getTotalBetAmount();
             System.out.println(totalBetAmount);
             if (checkValidateBalance(totalBetAmount)) {
@@ -90,7 +105,6 @@ public class RacingActivity extends AppCompatActivity {
             showAddMenu();
         });
         btnLogout.setOnClickListener(this::logOut);
-        // TODO: Handle betting
     }
 
     // NOTE: If an INIT_SPEED is outside the range of [MIN_SPEED, MAX_SPEED],
@@ -128,7 +142,7 @@ public class RacingActivity extends AppCompatActivity {
         TextView balanceTextView = dialog.findViewById(R.id.balanceTextView);
         final EditText addAmountEditText = dialog.findViewById(R.id.addAmount);
         Button btnAdd = dialog.findViewById(R.id.btnAddMoney);
-        balanceTextView.setText("Current Balance: " + balance.toString()+ " $");
+        balanceTextView.setText("Current Balance: " + balance.toString() + " $");
         Button closeButton = dialog.findViewById(R.id.close_button);
         btnAdd.setOnClickListener(view -> {
             Log.d("TAG", "Add button clicked!");
@@ -140,7 +154,7 @@ public class RacingActivity extends AppCompatActivity {
                     System.out.println("Updated balance: " + balance); // Check balance value here
                     // Update UI element (if applicable)
                     runOnUiThread(() -> {
-                        balanceTextView.setText("Current Balance: " + balance.toString() +" $");
+                        balanceTextView.setText("Current Balance: " + balance.toString() + " $");
 
                     });
 
@@ -187,32 +201,43 @@ public class RacingActivity extends AppCompatActivity {
                 return -1;
         }
     }
+
     private int getBetAmount(int horseIndex) {
         EditText editText;
         switch (horseIndex) {
             case 0:
-                editText = findViewById(R.id.editTextNumber);
+                editText = findViewById(R.id.betHorse1);
                 break;
             case 1:
-                editText = findViewById(R.id.editTextNumber2);
+                editText = findViewById(R.id.betHorse2);
                 break;
             case 2:
-                editText = findViewById(R.id.editTextNumber3);
+                editText = findViewById(R.id.betHorse3);
                 break;
             default:
                 return 0;
         }
+        if(horseBet[horseIndex] != 1) {
+            return 0;
+        }
         try {
             String betAmountStr = editText.getText().toString();
+            if(betAmountStr.isEmpty()) {
+                return 0;
+            }
+
+            Log.d(TAG, "getBetAmount: " + betAmountStr);
             return Integer.parseInt(betAmountStr);
         } catch (NumberFormatException e) {
             System.out.println("the text show when have error");
             return 0;
         }
     }
+
     private BigDecimal calculateWinnings(int winningHorseId) {
+        Log.d(TAG, "calculateWinnings: " + winningHorseId);
         int betAmount = getBetAmount(winningHorseId);
-        if (betAmount ==0){
+        if (betAmount == 0) {
             return null;
         } else {
             BigDecimal winnings = BigDecimal.valueOf(betAmount).multiply(BigDecimal.valueOf(2));
@@ -220,13 +245,17 @@ public class RacingActivity extends AppCompatActivity {
             return winnings;
         }
     }
+
     private int getTotalBetAmount() {
         int totalBet = 0;
         getCheckedHorses();
         for (int i = 0; i < HORSE_COUNT; i++) {
             if (horseBet[i] == 1) {
-                totalBet += getBetAmount(i);
-            }
+                Log.d(TAG, "getTotalBetAmount: " + i);
+                double bet = getBetAmount(i);
+                totalBet += bet;
+                bets[i] = bet;
+            } else bets[i] = 0;
         }
         return totalBet;
     }
@@ -312,20 +341,30 @@ public class RacingActivity extends AppCompatActivity {
             if (finished == HORSE_COUNT) {
                 raceState = RaceState.COMPLETED;
                 stopRace();
+                stopSound();
                 showResults();
-                // TODO: Show results dialog
-                // TODO: Payout
-                int winningHorseId = getWinningHorseId(standings);
+                // Payout
+                int winningHorseId = invStandings[0];
                 if (winningHorseId != -1) {
                     calculateWinnings(winningHorseId);
-                    stopRace();
-                    initRace();
-                    stopSound();
+
+
 //            for (int i = 0; i < standings.length; i++) {
 //                System.out.println("standings[" + i + "]: " + standings[i]);
 //            }
+                    // Show results dialog
+                    double total = balance.subtract(oldBalance).doubleValue();
+                    Intent intent = new Intent(RacingActivity.this, ResultActivity.class);
+                    intent.putExtra("standings", standings);
+                    intent.putExtra("balance", balance.doubleValue());
+                    intent.putExtra("BET1", bets[0]);
+                    intent.putExtra("BET2", bets[1]);
+                    intent.putExtra("BET3", bets[2]);
+                    intent.putExtra("total", total);
+                    startActivity(intent);
+                    initRace();
                 } else {
-                    Log.d("TAG","error when calculate winner");
+                    Log.d("TAG", "error when calculate winner");
                 }
             }
         }
@@ -365,25 +404,26 @@ public class RacingActivity extends AppCompatActivity {
         }
     }
 
-    void startSound(){
+    void startSound() {
         sound = MediaPlayer.create(this, R.raw.horse_sound);
         sound.start();
     }
 
-    void stopSound(){
+    void stopSound() {
         sound.stop();
     }
-    public int getWinningHorseId(int[] standings) {
-        int minStanding = standings[0];
-        int winningHorseId = 0;
-        for (int i = 1; i < standings.length; i++) {
-            if (standings[i] < minStanding) {
-                minStanding = standings[i];
-                winningHorseId = i;
-            }
-        }
-        return winningHorseId;
-    }
+
+//    public int getWinningHorseId(int[] standings) {
+//        int minStanding = standings[0];
+//        int winningHorseId = 0;
+//        for (int i = 1; i < standings.length; i++) {
+//            if (standings[i] < minStanding) {
+//                minStanding = standings[i];
+//                winningHorseId = i;
+//            }
+//        }
+//        return winningHorseId;
+//    }
 
     void startRace() {
         if (raceState != RaceState.READY) return;
@@ -402,7 +442,7 @@ public class RacingActivity extends AppCompatActivity {
     private void initRace() {
         for (int i = 0; i < HORSE_COUNT; i++) {
             progress[i] = 0;
-            standings[i] = 2;
+            standings[i] = 1;
             speed[i] = random.nextInt(INIT_SPEED_MAX - INIT_SPEED_MIN + 1) + INIT_SPEED_MIN;
             lastSpeedChange[i] = 0;
             horses[i].setProgress(0, true);
@@ -428,8 +468,8 @@ public class RacingActivity extends AppCompatActivity {
         stopSound();
     }
 
-    void logOut(View view){
-        Intent intent = new Intent(this,MainActivity.class);
+    void logOut(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

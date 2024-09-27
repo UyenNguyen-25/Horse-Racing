@@ -5,13 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/_002_i505_013_game_landscapes_set_15"
     tools:context=".MainActivity">
 
     <EditText
         android:id="@+id/UsernameEditText"
         android:layout_width="335dp"
         android:layout_height="48dp"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="102dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/username"
@@ -20,12 +21,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.306" />
+        app:layout_constraintVertical_bias="0.323" />
+
+    <TextView
+        android:id="@+id/usernameError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="error ne"
+        android:textColor="#D10000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/PasswordEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.104"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/UsernameEditText"
+        app:layout_constraintVertical_bias="0.0" />
+
 
     <EditText
         android:id="@+id/PasswordEditText"
         android:layout_width="335dp"
         android:layout_height="48dp"
+        android:layout_marginTop="20dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/password"
@@ -34,7 +51,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/UsernameEditText"
-        app:layout_constraintVertical_bias="0.054" />
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/passwordError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="error ne"
+        android:textColor="#D10000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/LoginButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.104"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PasswordEditText"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="HORSE RACING"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"
@@ -62,34 +106,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.472"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PasswordEditText"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/usernameError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="error ne"
-        android:textColor="#D10000"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/PasswordEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.104"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UsernameEditText"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/passwordError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="error ne"
-        android:textColor="#D10000"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/LoginButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.104"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PasswordEditText"
         app:layout_constraintVertical_bias="0.0" />
