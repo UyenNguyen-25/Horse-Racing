@@ -1,10 +1,13 @@
 package com.miniproject.horseracing;
 
+import android.content.Intent;
 import android.icu.math.BigDecimal;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.SeekBar;
 
 import androidx.activity.EdgeToEdge;
@@ -15,9 +18,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class RacingActivity extends AppCompatActivity {
+    EditText betHorse1;
+    EditText betHorse2;
+    EditText betHorse3;
+    private double bet1 = 0;
+    private double bet2 = 0;
+    private double bet3 = 0;
     private final String TAG = "RacingActivity";
 
-    private final double ODDS = 2;
+    private final double ODDS = 1;
     private BigDecimal balance = BigDecimal.valueOf(100);
 
     SeekBar[] horses = new SeekBar[3];
@@ -118,34 +127,41 @@ public class RacingActivity extends AppCompatActivity {
             }
 
             // Determine if there's a winner
+            boolean hasWinner = false;
             for (int i = 0; i < HORSE_COUNT; i++) {
                 if (progress[i] >= 100) {
-                    stopRace();
+                    hasWinner = true;
+                    break;
                     // TODO: Show results
                 }
+            }
+
+            if (hasWinner && isRacing) {
+                stopRace();
             }
         }
 
         private void updateStandings() {
-            // FIXME: Is there a better way?
-            if (progress[0] > progress[1]) {
-                if (progress[1] > progress[2]) {
-                    setStandings(1, 2, 3);
-                } else if (progress[2] > progress[0]) {
-                    setStandings(2, 3, 1);
-                } else {
-                    setStandings(1, 3, 2);
-                }
-            } else { // [0] < [1]
-                if (progress[2] < progress[0]) {
-                    setStandings(2, 1, 3);
-                } else if (progress[2] > progress[1]) {
-                    setStandings(3, 2, 1);
-                } else {
-                    setStandings(3, 1, 2);
+            int[] tempStandings = new int[HORSE_COUNT];
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                tempStandings[i] = i;
+            }
+
+            for (int i = 0; i < HORSE_COUNT - 1; i++) {
+                for (int j = 0; j < HORSE_COUNT - i - 1; j++) {
+                    if (progress[tempStandings[j]] < progress[tempStandings[j + 1]]) {
+                        int temp = tempStandings[j];
+                        tempStandings[j] = tempStandings[j + 1];
+                        tempStandings[j + 1] = temp;
+                    }
                 }
             }
+
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                standings[tempStandings[i]] = i + 1;
+            }
         }
+
 
         private void setStandings(int... s) {
             System.arraycopy(s, 0, standings, 0, 3);
@@ -158,6 +174,25 @@ public class RacingActivity extends AppCompatActivity {
         }
         isRacing = true;
         Log.d(TAG, "Race started.");
+
+        betHorse1 = findViewById(R.id.betHorse1);
+        betHorse2 = findViewById(R.id.betHorse2);
+        betHorse3 = findViewById(R.id.betHorse3);
+
+        if (((CheckBox) findViewById(R.id.checkBox1)).isChecked()) {
+            bet1 = Double.parseDouble(betHorse1.getText().toString());
+            Log.d(TAG, "bet1: " + bet1);
+        }
+        if (((CheckBox) findViewById(R.id.checkBox2)).isChecked()) {
+            bet2 = Double.parseDouble(betHorse2.getText().toString());
+            Log.d(TAG, "bet2: " + bet2);
+        }
+        if (((CheckBox) findViewById(R.id.checkBox3)).isChecked()) {
+            bet3 = Double.parseDouble(betHorse3.getText().toString());
+            Log.d(TAG, "bet3: " + bet3);
+        }
+
+        Log.d(TAG, "Bets placed: Horse 1 = " + bet1 + ", Horse 2 = " + bet2 + ", Horse 3 = " + bet3);
 
         initRace();
         for (int i = 0; i < HORSE_COUNT; i++) {
@@ -188,6 +223,41 @@ public class RacingActivity extends AppCompatActivity {
             raceTask.cancel();
             raceTask = null;
         }
+
+        double totalWinnings = 0;
+        double totalLoss = 0;
+
+        if (standings[0] == 1) {
+            totalWinnings += bet1 * ODDS;
+        } else {
+            totalLoss += bet1;
+        }
+        if (standings[1] == 1) {
+            totalWinnings += bet2 * ODDS;
+        } else {
+            totalLoss += bet2;
+        }
+        if (standings[2] == 1) {
+            totalWinnings += bet3 * ODDS;
+        } else {
+            totalLoss += bet3;
+        }
+
+        Log.d(TAG, "totalWinnings: " + totalWinnings);
+        Log.d(TAG, "totalLoss: " + totalLoss);
+
+        double total = totalWinnings - totalLoss;
+        balance = balance.add(BigDecimal.valueOf(total));
+
+        Intent intent = new Intent(RacingActivity.this, ResultActivity.class);
+        intent.putExtra("standings", standings);
+        intent.putExtra("balance", balance.doubleValue());
+        intent.putExtra("BET1", bet1);
+        intent.putExtra("BET2", bet2);
+        intent.putExtra("BET3", bet3);
+        intent.putExtra("odds", ODDS);
+        intent.putExtra("total", total);
+        startActivity(intent);
     }
 
     void resetRace(View view) {
