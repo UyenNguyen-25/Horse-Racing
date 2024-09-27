@@ -10,7 +10,7 @@
         android:id="@+id/layoutRacing"
         android:layout_width="416dp"
         android:layout_height="373dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/_002_i505_013_game_landscapes_set_15"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,145 +26,53 @@
             android:inputType="number"
             tools:ignore="Autofill,LabelFor" />
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            app:srcCompat="@drawable/chara_stand_1120_112001" />
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="410dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="100dp"
+            android:progress="80"
+            android:progressDrawable="@drawable/bg_seekbar_racetrack"
+            android:thumb="@drawable/ic_horse_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            app:srcCompat="@drawable/chara_stand_1006_100601" />
+        <SeekBar
+            android:id="@+id/seekBar2"
+            android:layout_width="410dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:progress="20"
+            android:progressDrawable="@drawable/bg_seekbar_racetrack"
+            android:thumb="@drawable/ic_horse_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            app:srcCompat="@drawable/chara_stand_1009_100902" />
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            app:srcCompat="@drawable/chara_stand_1020_102001" />
-
-
+        <SeekBar
+            android:id="@+id/seekBar3"
+            android:layout_width="410dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:progress="50"
+            android:progressDrawable="@drawable/bg_seekbar_racetrack"
+            android:thumb="@drawable/ic_horse_3" />
     </LinearLayout>
-
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text="Black Horse"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="HardcodedText,MissingConstraints" />
-
-    <CheckBox
-        android:id="@+id/checkBox3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Red Horse"
-        app:layout_constraintStart_toStartOf="@+id/checkBox2"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox2"
-        tools:ignore="HardcodedText" />
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/checkBox4"
-        android:layout_marginTop="4dp"
-        android:text="Green Horse"
-        app:layout_constraintStart_toStartOf="@id/checkBox3"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox3"
-        />
-
-    <Button
-        android:id="@+id/addBalanceButton"
-        android:layout_width="75dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="24dp"
-        android:text="Add"
-        app:layout_constraintStart_toEndOf="@+id/moneyResult"
-        tools:layout_editor_absoluteY="416dp" />
-
-    <Button
-        android:id="@+id/buttonControlMusic"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="224dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.687"
-        app:layout_constraintStart_toEndOf="@+id/editTextNumber" />
 
     <TextView
         android:id="@+id/moneyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="24dp"
         android:text="Your money ($): "
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/moneyResult"
-        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
+        app:layout_constraintTop_toBottomOf="@id/layoutRacing"
         tools:ignore="HardcodedText" />
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-
-        android:text="Log out"
-        app:layout_constraintBottom_toBottomOf="@+id/btnStart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.254"
-        app:layout_constraintStart_toEndOf="@+id/BtnReset"
-        app:layout_constraintTop_toTopOf="@+id/BtnReset"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="HardcodedText,MissingConstraints" />
-
-    <Button
-        android:id="@+id/btnStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        app:layout_constraintBaseline_toBaselineOf="@+id/finish"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.099"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/BtnReset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-
-        android:text="Reset"
-        app:layout_constraintBottom_toBottomOf="@+id/btnStart"
-        app:layout_constraintStart_toEndOf="@+id/btnStart"
-        app:layout_constraintTop_toTopOf="@+id/btnStart"
-        app:layout_constraintVertical_bias="1.0"
-        tools:ignore="HardcodedText,MissingConstraints" />
-
-    <CheckBox
-        android:id="@+id/checkBox2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="4dp"
-        android:text="White Horse"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox1"
-        tools:ignore="HardcodedText" />
-
 
     <TextView
         android:id="@+id/moneyResult"
@@ -172,11 +80,132 @@
         android:layout_height="wrap_content"
         android:text="100.0"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/moneyTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintBottom_toBottomOf="@id/moneyTitle"
+        app:layout_constraintEnd_toStartOf="@+id/btnAddBalance"
+        app:layout_constraintHorizontal_bias="0.902"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="HardcodedText,MissingConstraints" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:text="Brown Horse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutRacing"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="HardcodedText,MissingConstraints" />
+
+
+    <CheckBox
+        android:id="@+id/checkBox2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:text="Red Horse"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkBox1"
+        tools:ignore="HardcodedText" />
+
+    <CheckBox
+        android:id="@+id/checkBox3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Yellow horse"
+        app:layout_constraintStart_toStartOf="@id/checkBox2"
+        app:layout_constraintTop_toBottomOf="@id/checkBox2"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/betHorse1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="6dp"
+        android:autofillHints=""
+        android:inputType="number"
+        android:visibility="invisible"
+        tools:ignore="HardcodedText,MissingConstraints" />
+
+    <EditText
+        android:id="@+id/betHorse2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:autofillHints=""
+        android:hint="0.0$"
+        android:inputType="number"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@id/betHorse1"
+        app:layout_constraintTop_toTopOf="@id/betHorse1"
+        tools:ignore="HardcodedText" />
+
+    <EditText
+        android:id="@+id/betHorse3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:autofillHints=""
+        android:hint="0.0$"
+        android:inputType="number"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@id/betHorse2"
+        app:layout_constraintTop_toTopOf="@id/betHorse2"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnAddBalance"
+        android:layout_width="115dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:text="Add more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        app:layout_constraintBaseline_toBaselineOf="@id/finish"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.099"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:text="Reset"
+        app:layout_constraintBottom_toBottomOf="@id/btnStart"
+        app:layout_constraintStart_toEndOf="@id/btnStart"
+        app:layout_constraintTop_toTopOf="@id/btnStart"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="HardcodedText,MissingConstraints" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+
+        android:text="Log out"
+        app:layout_constraintBottom_toBottomOf="@id/btnStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.556"
+        app:layout_constraintStart_toEndOf="@id/btnReset"
+        app:layout_constraintTop_toTopOf="@id/btnReset"
         app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText,MissingConstraints" />
 
@@ -185,15 +214,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="@+id/btnStart"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox4" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBox3" />
 
     <EditText
         android:id="@+id/editTextNumber"
         android:layout_width="76dp"
         android:layout_height="43dp"
-        android:layout_marginEnd="104dp"
         android:layout_marginBottom="4dp"
         android:autofillHints=""
         android:ems="10"
@@ -201,50 +229,44 @@
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="@+id/checkBox1"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="HardcodedText" />
-
-    <EditText
-        android:id="@+id/editTextNumber4"
-        android:layout_width="76dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginBottom="4dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="0.0$"
-        android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox4"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.465"
+        app:layout_constraintStart_toEndOf="@+id/checkBox1"
+        app:layout_constraintTop_toBottomOf="@+id/layoutRacing"
+        app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText" />
 
     <EditText
         android:id="@+id/editTextNumber2"
         android:layout_width="76dp"
         android:layout_height="43dp"
-        android:layout_marginEnd="104dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="0.0$"
         android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox2"
+        app:layout_constraintBottom_toBottomOf="@id/checkBox2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toEndOf="@+id/checkBox2"
         app:layout_constraintTop_toBottomOf="@+id/editTextNumber"
-        app:layout_constraintVertical_bias="0.642"
+        app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText" />
 
     <EditText
+        android:id="@+id/editTextNumber3"
         android:layout_width="76dp"
         android:layout_height="43dp"
-        android:layout_marginEnd="104dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="0.0$"
         android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="@+id/checkBox3"
+        app:layout_constraintBottom_toBottomOf="@id/checkBox3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toEndOf="@+id/checkBox3"
         app:layout_constraintTop_toBottomOf="@+id/editTextNumber2"
-        app:layout_constraintVertical_bias="0.642"
+        app:layout_constraintVertical_bias="1.0"
         tools:ignore="HardcodedText" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
