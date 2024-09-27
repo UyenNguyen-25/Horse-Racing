@@ -1,7 +1,5 @@
 package com.miniproject.horseracing;
-
 import android.app.Dialog;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.icu.math.BigDecimal;
@@ -16,13 +14,9 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -188,9 +182,8 @@ public class RacingActivity extends AppCompatActivity {
             String betAmountStr = editText.getText().toString();
             return Integer.parseInt(betAmountStr);
         } catch (NumberFormatException e) {
-            // Handle exception (e.g., show a toast or dialog)
             Toast.makeText(this, "Invalid bet amount. Please enter a number.", Toast.LENGTH_SHORT).show();
-            return 0; // Or return a default value like 0
+            return 0;
         }
     }
     private BigDecimal calculateWinnings(int winningHorseId) {
@@ -294,6 +287,16 @@ public class RacingActivity extends AppCompatActivity {
                 showResults();
                 // TODO: Show results dialog
                 // TODO: Payout
+                int winningHorseId = getWinningHorseId(standings);
+                if (winningHorseId != -1) {
+                    calculateWinnings(winningHorseId);
+                    Log.d("TAG","Ok u win");
+//            for (int i = 0; i < standings.length; i++) {
+//                System.out.println("standings[" + i + "]: " + standings[i]);
+//            }
+                } else {
+                    Log.d("TAG","error when calculate winner");
+                }
             }
         }
 
@@ -403,17 +406,6 @@ public class RacingActivity extends AppCompatActivity {
         if (raceTask != null) {
             raceTask.cancel();
             raceTask = null;
-        }
-        int winningHorseId = getWinningHorseId(standings);
-        if (winningHorseId != -1) {
-            // Calculate winnings only if there's a winner
-            calculateWinnings(winningHorseId);
-            Log.d("TAG","Ok u win");
-//            for (int i = 0; i < standings.length; i++) {
-//                System.out.println("standings[" + i + "]: " + standings[i]);
-//            }
-        } else {
-            Log.d("TAG","error when calculate winner");
         }
         stopSound();
     }
