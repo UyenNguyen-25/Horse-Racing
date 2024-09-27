@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import model.Account;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     public final static String ERROR_MESSAGE = "Please enter full fill";
 
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         passwordErr = findViewById(R.id.passwordError);
         signInBtn = findViewById(R.id.LoginButton);
         signInBtn.setOnClickListener(this);
+//        Account acc = new Account("sa", "1");
     }
 
     boolean checkInput() {
