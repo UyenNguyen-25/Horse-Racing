@@ -2,6 +2,7 @@ package com.miniproject.horseracing;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -82,7 +83,9 @@ public class ResultActivity extends AppCompatActivity {
             finish();
         });
         btnReset.setOnClickListener(v -> {
-            finish();
+            Intent intent = new Intent(this,RacingActivity.class );
+            intent.putExtra("action","refresh");
+            startActivity(intent);
         });
     }
 }

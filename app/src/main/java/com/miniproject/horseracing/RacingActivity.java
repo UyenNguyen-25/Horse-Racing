@@ -20,6 +20,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,9 +30,6 @@ public class RacingActivity extends AppCompatActivity {
 
     final int HORSE_COUNT = 3;
 
-    EditText betHorse1;
-    EditText betHorse2;
-    EditText betHorse3;
     private double[] bets = new double[HORSE_COUNT];
 //    private double bet1 = 0;
 //    private double bet2 = 0;
@@ -43,7 +41,6 @@ public class RacingActivity extends AppCompatActivity {
     private BigDecimal oldBalance = BigDecimal.valueOf(0);
 
     SeekBar[] horses = new SeekBar[HORSE_COUNT];
-    private boolean isRacing;
 
     public RacingActivity() {
         sound = null;
@@ -60,52 +57,6 @@ public class RacingActivity extends AppCompatActivity {
 
     MediaPlayer sound;
 
-    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_racing);
-        moneyResult = findViewById(R.id.tvBalance);
-        Button btnStart = findViewById(R.id.btnStart);
-        Button btnReset = findViewById(R.id.btnReset);
-        Button btnLogout = findViewById(R.id.btnLogout);
-        Button btnAddBalance = findViewById(R.id.btnAddBalance);
-        horses[0] = findViewById(R.id.seekBar1);
-        horses[1] = findViewById(R.id.seekBar2);
-        horses[2] = findViewById(R.id.seekBar3);
-        for (int i = 0; i < HORSE_COUNT; i++) {
-            horses[i].setProgress(0, false);
-            horses[i].setOnTouchListener((v, e) -> true);
-        }
-
-//        btnStart.setOnClickListener(this::startRace);
-        btnStart.setOnClickListener(view -> {
-            oldBalance = balance;
-            int totalBetAmount = getTotalBetAmount();
-            System.out.println(totalBetAmount);
-            if (checkValidateBalance(totalBetAmount)) {
-                BigDecimal bet = new BigDecimal(totalBetAmount);
-                balance = balance.subtract(bet);
-                System.out.println("After bet:" + balance);
-                runOnUiThread(() -> {
-                    moneyResult.setText(balance.toString());
-                });
-                startRace();
-
-            } else {
-                Toast.makeText(this, "Bạn không đủ tiền để đặt cược.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btnReset.setOnClickListener(this::resetRace);
-        initRace();
-
-        // Handle Add Balance
-        btnAddBalance.setOnClickListener(view -> {
-            showAddMenu();
-        });
-        btnLogout.setOnClickListener(this::logOut);
-    }
 
     // NOTE: If an INIT_SPEED is outside the range of [MIN_SPEED, MAX_SPEED],
     // the horse's speed will be clamped the first time it attempts to change speed.
@@ -130,6 +81,56 @@ public class RacingActivity extends AppCompatActivity {
     private final int[] horseBet = new int[HORSE_COUNT];
     private final int[] speed = new int[HORSE_COUNT];
     private final byte[] lastSpeedChange = new byte[HORSE_COUNT];
+
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_racing);
+        moneyResult = findViewById(R.id.tvBalance);
+        Button btnStart = findViewById(R.id.btnStart);
+        Button btnReset = findViewById(R.id.btnReset);
+        Button btnLogout = findViewById(R.id.btnLogout);
+        Button btnAddBalance = findViewById(R.id.btnAddBalance);
+        horses[0] = findViewById(R.id.seekBar1);
+        horses[1] = findViewById(R.id.seekBar2);
+        horses[2] = findViewById(R.id.seekBar3);
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            horses[i].setProgress(0, false);
+            horses[i].setOnTouchListener((v, e) -> true);
+        }
+        resetRace();
+//        btnStart.setOnClickListener(this::startRace);
+        btnStart.setOnClickListener(view -> {
+            oldBalance = balance;
+            int totalBetAmount = getTotalBetAmount();
+            System.out.println(totalBetAmount);
+            if (checkValidateBalance(totalBetAmount)) {
+                BigDecimal bet = new BigDecimal(totalBetAmount);
+                balance = balance.subtract(bet);
+                System.out.println("After bet:" + balance);
+                runOnUiThread(() -> {
+                    moneyResult.setText(balance.toString());
+                });
+                startRace();
+
+            } else {
+                Toast.makeText(this, "Bạn không đủ tiền để đặt cược.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnReset.setOnClickListener(this::resetRace);
+        initRace();
+
+        // Handle Add Balance
+        btnAddBalance.setOnClickListener(view -> {
+            showAddMenu();
+        });
+        btnLogout.setOnClickListener(this::logOut);
+
+
+    }
 
     private final Random random = new Random();
     private Timer timer;
@@ -187,6 +188,18 @@ public class RacingActivity extends AppCompatActivity {
                 horseBet[i] = 0;
             }
         }
+    }
+
+    private void resetCheckedHorse() {
+        for (int i = 0; i < HORSE_COUNT; i++) {
+            CheckBox checkBox = findViewById(getCheckBoxId(i));
+            checkBox.setChecked(false);
+            resetBet(i);
+        }
+        balance = oldBalance;
+        runOnUiThread(() -> {
+            moneyResult.setText(balance.toString());
+        });
     }
 
     private int getCheckBoxId(int index) {
@@ -439,6 +452,20 @@ public class RacingActivity extends AppCompatActivity {
         startSound();
     }
 
+    private void resetBet(int i){
+        EditText editText;
+            if (i == 0) {
+                editText = findViewById(R.id.betHorse1);
+            } else if (i == 1) {
+                editText = findViewById(R.id.betHorse2);
+            } else{
+                editText = findViewById(R.id.betHorse3);
+            }
+            editText.setText("");
+            editText.setHint("0.0");
+
+    }
+
     private void initRace() {
         for (int i = 0; i < HORSE_COUNT; i++) {
             progress[i] = 0;
@@ -465,7 +492,26 @@ public class RacingActivity extends AppCompatActivity {
     void resetRace(View view) {
         stopRace();
         initRace();
+        resetCheckedHorse();
         stopSound();
+    }
+
+    void resetRace(){
+        Intent intent = getIntent();
+        String action = intent.getStringExtra("action");
+
+        initRace();
+
+        if(Objects.equals(action, "refresh") || action == null){
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                CheckBox checkBox = findViewById(getCheckBoxId(i));
+                checkBox.setChecked(false);
+                resetBet(i);
+            }
+            runOnUiThread(() -> {
+                moneyResult.setText(balance.toString());
+            });
+        }
     }
 
     void logOut(View view) {
