@@ -325,8 +325,7 @@
         android:id="@+id/btnPlayAgain"
         android:layout_width="182dp"
         android:layout_height="55dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="188dp"
+        android:layout_marginTop="184dp"
         android:backgroundTint="#FAC401"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
@@ -338,6 +337,8 @@
         android:textColor="#1E0C3D"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horseLayout"
         tools:ignore="HardcodedText" />

@@ -124,14 +124,14 @@
             android:id="@+id/checkBox1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="136dp"
+            android:layout_marginBottom="140dp"
             android:buttonTint="@color/white"
             android:text="Purple Horse"
             android:textColor="@color/white"
             android:textSize="19sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.202"
+            app:layout_constraintHorizontal_bias="0.183"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="HardcodedText,MissingConstraints" />
 
@@ -193,7 +193,7 @@
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/checkBox1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.478"
+            app:layout_constraintHorizontal_bias="0.53"
             app:layout_constraintStart_toEndOf="@+id/checkBox1"
             tools:ignore="HardcodedText" />
 

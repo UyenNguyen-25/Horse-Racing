@@ -20,6 +20,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -99,7 +100,7 @@ public class RacingActivity extends AppCompatActivity {
             horses[i].setProgress(0, false);
             horses[i].setOnTouchListener((v, e) -> true);
         }
-        refreshRace();
+        resetRace();
 //        btnStart.setOnClickListener(this::startRace);
         btnStart.setOnClickListener(view -> {
             oldBalance = balance;
@@ -495,16 +496,22 @@ public class RacingActivity extends AppCompatActivity {
         stopSound();
     }
 
-    void refreshRace(){
+    void resetRace(){
+        Intent intent = getIntent();
+        String action = intent.getStringExtra("action");
+
         initRace();
-        for (int i = 0; i < HORSE_COUNT; i++) {
-            CheckBox checkBox = findViewById(getCheckBoxId(i));
-            checkBox.setChecked(false);
-            resetBet(i);
+
+        if(Objects.equals(action, "refresh") || action == null){
+            for (int i = 0; i < HORSE_COUNT; i++) {
+                CheckBox checkBox = findViewById(getCheckBoxId(i));
+                checkBox.setChecked(false);
+                resetBet(i);
+            }
+            runOnUiThread(() -> {
+                moneyResult.setText(balance.toString());
+            });
         }
-        runOnUiThread(() -> {
-            moneyResult.setText(balance.toString());
-        });
     }
 
     void logOut(View view) {
