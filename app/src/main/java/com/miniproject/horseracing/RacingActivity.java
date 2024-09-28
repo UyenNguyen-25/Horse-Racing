@@ -511,7 +511,9 @@ public class RacingActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 moneyResult.setText(balance.toString());
             });
+            return;
         }
+        resetCheckedHorse();
     }
 
     void logOut(View view) {
